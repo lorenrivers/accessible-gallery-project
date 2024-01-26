@@ -33,10 +33,8 @@ let images = [
 // It adds a class of 'thumb-image' to enable images to be styled in CSS.
 // It adds the tabindex attribute (which is 0) which allows each image to be tabbable.
 // It then appends the newly created image element to the thumbnailContainer div.
-// Event listener added to create the larger display of an image when any image in the thumbnail is clicked.
-// Event listener added that will listen for 'Enter' to be pressed. When pressed, it will display the image it was pressed on (the event key).
 const createThumbnail = (arrayOfImages) => {
-  arrayOfImages.forEach((image) => {
+  arrayOfImages.forEach((image, index) => {
     let imageElement = document.createElement("img");
     imageElement.src = image.url;
     imageElement.alt = image.alt;
@@ -44,13 +42,20 @@ const createThumbnail = (arrayOfImages) => {
     imageElement.setAttribute("tabindex", "0");
     thumbnailContainer.appendChild(imageElement);
 
+    // Event listener added to create the larger display of an image when any image in the thumbnail is clicked.
     imageElement.addEventListener("click", () => {
       createDisplayImage(image);
     });
 
-    imageElement.addEventListener("keydown", function (event) {
+    // Event listener added that will listen for 'Enter' to be pressed. When pressed, it will display the image it was pressed on (the event key). If the right arrow is pressed, then the next image element is selected (through nextElementSibling property) and the object method .focus() applied, which will by default scroll to the element and provide visible indication that element has been scrolled to. When the left arrow is pressed, the previous image element is selected and the object method .focus() applied, enabling the user to move back through the images.
+    // A problem is that the arrow keys only work once the thumbnail container has been tabbed onto. Voice narrator doesn't like the arrow keys either (doesn't move to next image when arrows pressed and narrator is on).
+    imageElement.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         createDisplayImage(image);
+      } else if (event.key === "ArrowRight") {
+        imageElement.nextElementSibling.focus();
+      } else if (event.key === "ArrowLeft") {
+        imageElement.previousElementSibling.focus();
       }
     });
   });
